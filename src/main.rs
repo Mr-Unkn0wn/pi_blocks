@@ -11,7 +11,7 @@ mod draw_ui;
 fn window_conf() -> Conf {
     Conf {
         window_title: "Pi Blocks".to_string(),
-        fullscreen: true,
+        fullscreen: false,
         window_resizable: false,
         window_width: 1280,
         window_height: 720,
@@ -29,6 +29,8 @@ async fn main() {
     let wall_x = screen_width() / 2.0 - grid * 5.0;
     let wall_y = screen_height() / 2.0 + grid * 2.0;
 
+    let mut time_per_tick: f64 = 1.0 / 50.0;
+    let mut active: bool = false;
 
 
     let mut box_right = Square{
@@ -47,14 +49,29 @@ async fn main() {
         vel: 0.0,
     };
 
+    let mut box_right_sim = Square{
+        mass: 0.0,
+        pos: Vec2::new(0.0, 0.0),
+        width: 10.0,
+        height: 10.0,
+        vel: 0.0,
+    };
 
-    let coll_list = simulate::simulate_everything(&mut box_left.clone(), &mut box_right.clone(), wall_x);
+    let mut box_left_sim = Square{
+        mass: 0.0,
+        pos: Vec2::new(0.0, 0.0),
+        width: 10.0,
+        height: 10.0,
+        vel: 0.0,
+    };
+
+
+    let mut coll_list: Vec<simulate::Collision> = vec![];
     let mut index: usize = 0;
     let mut simulation_time: f64 = 0.0;
 
     loop {
         if is_key_pressed(KeyCode::Q) || is_key_pressed(KeyCode::Escape) {
-            println!("Total : {}", coll_list.len());
             break;
         }
 
@@ -62,14 +79,19 @@ async fn main() {
         draw_game::draw_grid(SKYBLUE, grid, 3, 3.0, 1.0, 0.3);
         draw_game::draw_enviornment(WHITE, wall_x, wall_y, grid);
 
-        box_right.draw(&font);
-        box_left.draw(&font);
-        playback::update_squares(&mut box_left, &mut box_right, &wall_x, &coll_list, &mut simulation_time, &mut index);
+        if active {
+            box_right_sim.draw(&font);
+            box_left_sim.draw(&font);
+            playback::update_squares(&time_per_tick, &mut box_left_sim, &mut box_right_sim, &wall_x, &coll_list, &mut simulation_time, &mut index);
+        } else {
+            box_right.draw(&font);
+            box_left.draw(&font);
+        }
 
         draw_game::draw_collision_counter(&index, &font, &grid);
 
         draw_game::draw_vingette(vingette);
-        draw_ui::draw_ui(&mut box_left, &mut box_right, &grid);
+        draw_ui::draw_ui(&mut index, &mut simulation_time,&mut box_left, &mut box_right, &mut box_left_sim, &mut box_right_sim, &grid, &mut time_per_tick, &mut active, &wall_x, &mut coll_list);
         next_frame().await
     }
 }

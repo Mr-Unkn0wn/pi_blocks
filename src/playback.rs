@@ -1,9 +1,9 @@
 use crate::{square::Square, simulate::{WallCollision, Collision, SquaresCollision}};
 
 
-pub fn update_squares(left: &mut Square, right: &mut Square, wall_x: &f32, coll_list: &Vec<Collision>, simulation_time: &mut f64, index: &mut usize){
-    let tick_time: f64 = 1.0/60.0;
-    *simulation_time += tick_time;
+pub fn update_squares(time_per_tick : &f64, left: &mut Square, right: &mut Square, wall_x: &f32, coll_list: &Vec<Collision>, simulation_time: &mut f64, index: &mut usize){
+
+    *simulation_time += time_per_tick;
 
     let mut list_time: f32;
     loop { // move through list until we reach last collision in current tick
@@ -20,7 +20,7 @@ pub fn update_squares(left: &mut Square, right: &mut Square, wall_x: &f32, coll_
             },
         }
 
-        if list_time as f64 >= *simulation_time + tick_time {
+        if list_time as f64 >= *simulation_time + time_per_tick {
             break;
         }
 
@@ -30,8 +30,8 @@ pub fn update_squares(left: &mut Square, right: &mut Square, wall_x: &f32, coll_
     }
 
     if *index == 0 as usize {
-        left.pos.x += left.vel * tick_time as f32;
-        right.pos.x += right.vel * tick_time as f32;
+        left.pos.x += left.vel * *time_per_tick as f32;
+        right.pos.x += right.vel * *time_per_tick as f32;
         return;
     }
 
@@ -47,12 +47,12 @@ pub fn update_squares(left: &mut Square, right: &mut Square, wall_x: &f32, coll_
     }
 
     if ( list_time as f64 ) < *simulation_time {
-        left.pos.x += left.vel * tick_time as f32;
-        right.pos.x += right.vel * tick_time as f32;
+        left.pos.x += left.vel * *time_per_tick as f32;
+        right.pos.x += right.vel * *time_per_tick as f32;
         return;
     }
 
-    let time_left_in_tick = *simulation_time + tick_time - list_time as f64;
+    let time_left_in_tick = *simulation_time + time_per_tick - list_time as f64;
     match relevant_collision {
         Collision::WallCollision(WallCollision { vel, .. }) => {
             left.pos.x = *wall_x;

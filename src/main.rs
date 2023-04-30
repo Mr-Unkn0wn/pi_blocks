@@ -29,7 +29,7 @@ async fn main() {
     let wall_y = screen_height() / 2.0 + grid * 2.0;
 
     let mut box_right = Square{
-        mass: 100.0,
+        mass: 10000000000.0,
         pos: Vec2::new(wall_x + 600.0, wall_y - 302.0),
         width: 300.0,
         height: 300.0,
@@ -47,8 +47,7 @@ async fn main() {
 
     let coll_list = simulate::simulate_everything(&mut box_left.clone(), &mut box_right.clone(), wall_x);
     let mut index: usize = 0;
-
-    println!("List : {:#?}", coll_list);
+    let mut simulation_time: f64 = 0.0;
 
     loop {
         if is_key_pressed(KeyCode::Q) || is_key_pressed(KeyCode::Escape) {
@@ -62,9 +61,9 @@ async fn main() {
 
         box_right.draw();
         box_left.draw();
-        playback::update_squares(&mut box_left, &mut box_right, &wall_x, &coll_list, &get_time(), &mut index);
+        playback::update_squares(&mut box_left, &mut box_right, &wall_x, &coll_list, &mut simulation_time, &mut index);
 
-        draw_text(&get_fps().to_string(), 0.0 + 10.0, 0.0 + 30.0, 20.0, WHITE);
+        draw_text(&index.to_string(), 0.0 + 50.0, 0.0 + 50.0, 20.0, WHITE);
         draw_background::draw_vingette(vingette);
         next_frame().await
     }

@@ -40,58 +40,54 @@ pub fn simulate_everything(left: &mut Square, right: &mut Square, wall_x: f32) -
         }
 
         if !squares_col_time.0 { // there is no collision between the squares
-            left.pos.x += left.vel * squares_col_time.1;
-            right.pos.x += right.vel * squares_col_time.1;
-
-            left.vel = -left.vel;
-
-            time += wall_col_time.1;
-
-
-            let c = WallCollision {
-                time,
-                vel: left.vel,
-            };
-
-            coll_list.push(Collision::WallCollision(c));
-
-        } else if !wall_col_time.0 || squares_col_time.1 < wall_col_time.1{ // there is no collision with the wall or the squares collider sooner
-            left.pos.x += left.vel * squares_col_time.1;
-            right.pos.x += right.vel * squares_col_time.1 + 0.001;
-
-            let (v1, v2) = ellastic_collision(left.mass, left.vel, right.mass, right.vel);
-            left.vel = v1;
-            right.vel = v2;
-
-            time += squares_col_time.1;
-
-            let c = SquaresCollision {
-                time,
-                x: left.pos.x,
-                vel1: left.vel,
-                vel2: right.vel,
-            };
-
-            coll_list.push(Collision::SquaresCollision(c));
-        } else { // the collision with the wall happens first
-            left.pos.x += left.vel * squares_col_time.1;
-            right.pos.x += right.vel * squares_col_time.1;
-
-            left.vel = -left.vel;
-
-            time += wall_col_time.1;
-
-
-            let c = WallCollision {
-                time,
-                vel: left.vel,
-            };
-
-            coll_list.push(Collision::WallCollision(c));
+            wall_collision(left, right, &wall_x, &wall_col_time.1, &mut time, &mut coll_list);
+        } 
+        else if !wall_col_time.0 || squares_col_time.1 < wall_col_time.1{ // there is no collision with the wall or the squares collider sooner
+            square_collision(left, right, &squares_col_time.1, &mut time, &mut coll_list);
+        } 
+        else { // the collision with the wall happens first
+            wall_collision(left, right, &wall_x, &wall_col_time.1, &mut time, &mut coll_list);
         }
 
     }
     coll_list
+}
+
+fn square_collision(left: &mut Square, right: &mut Square, squares_col_time: &f32, time: &mut f32, coll_list: &mut Vec<Collision>){
+    left.pos.x += left.vel * squares_col_time;
+    right.pos.x = left.pos.x + left.width;
+
+    let (v1, v2) = ellastic_collision(left.mass, left.vel, right.mass, right.vel);
+    left.vel = v1;
+    right.vel = v2;
+
+    *time += squares_col_time;
+
+    let c = SquaresCollision {
+        time: *time,
+        x: left.pos.x,
+        vel1: left.vel,
+        vel2: right.vel,
+    };
+
+    coll_list.push(Collision::SquaresCollision(c));  
+}
+
+fn wall_collision(left: &mut Square, right: &mut Square, wall_x: &f32, wall_col_time: &f32, time: &mut f32, coll_list: &mut Vec<Collision>){
+    left.pos.x = *wall_x;
+    right.pos.x += right.vel * wall_col_time;
+
+    left.vel = -left.vel;
+
+    *time += wall_col_time;
+
+
+    let c = WallCollision {
+        time: *time,
+        vel: left.vel,
+    };
+
+    coll_list.push(Collision::WallCollision(c));
 }
 
 fn ellastic_collision(mass1: f32, vel1: f32, mass2: f32, vel2: f32) -> (f32, f32){
@@ -112,12 +108,7 @@ fn find_collision_time(p1: f32, v1: f32, p2: f32, v2: f32) -> (bool, f32) {
 
     let result = p_diff / v_diff;
 
-    if result == 0.0{
-        println!("p1 {} v1 {} p2 {} v2 {}", p1, v1, p2, v2);
-        println!("oh no");
-    }
-
-    if result < 0.0 {
+    if result <= 0.0 {
         return (false, result);
     }
 

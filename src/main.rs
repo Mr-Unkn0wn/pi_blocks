@@ -1,9 +1,10 @@
 use macroquad::prelude::*;
-use square::simulate_everything;
-use crate::square::{Square, update_squares};
+use crate::square::{Square};
 
 mod square;
 mod draw_background;
+mod simulate;
+mod playback;
 
 
 
@@ -44,14 +45,14 @@ async fn main() {
     };
 
 
-    let coll_list = simulate_everything(&mut box_left.clone(), &mut box_right.clone(), wall_x);
+    let coll_list = simulate::simulate_everything(&mut box_left.clone(), &mut box_right.clone(), wall_x);
     let mut index: usize = 0;
 
-    print!("List : {:#?}", coll_list);
+    println!("List : {:#?}", coll_list);
 
     loop {
         if is_key_pressed(KeyCode::Q) || is_key_pressed(KeyCode::Escape) {
-            print!("Total : {}", coll_list.len());
+            println!("Total : {}", coll_list.len());
             break;
         }
 
@@ -61,7 +62,7 @@ async fn main() {
 
         box_right.draw();
         box_left.draw();
-        update_squares(&mut box_left, &mut box_right, &wall_x, &coll_list, &get_time(), &mut index);
+        playback::update_squares(&mut box_left, &mut box_right, &wall_x, &coll_list, &get_time(), &mut index);
 
         draw_text(&get_fps().to_string(), 0.0 + 10.0, 0.0 + 30.0, 20.0, WHITE);
         draw_background::draw_vingette(vingette);

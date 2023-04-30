@@ -43,3 +43,20 @@ pub fn draw_vingette(vingette: Texture2D){
     }
     );
 }
+
+
+pub fn draw_collision_counter(index: &usize, font: &Font, grid: &f32){
+
+    let text = &index.to_string();
+
+    let text_paras = TextParams{
+        font: *font,
+        font_size: 60,
+        color: WHITE,
+        ..Default::default()
+    };
+
+    let text_dim = measure_text(text, Some(text_paras.font), text_paras.font_size, text_paras.font_scale);
+
+    draw_text_ex(text, screen_width() / 2.0 - text_dim.width / 2.0, screen_height() / 2.0 - grid * 2.5 + text_dim.height / 2.0, text_paras);
+}

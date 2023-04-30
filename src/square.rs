@@ -21,7 +21,9 @@ impl Square{
             ..Default::default()
         };
 
-        draw_text_ex(&self.mass.to_string(), self.pos.x, self.pos.y - 10.0, text_paras);
+        let mass = self.mass.to_string();
+
+        draw_text_ex(&(mass + "kg"), self.pos.x, self.pos.y - 10.0, text_paras);
     }
 }
 

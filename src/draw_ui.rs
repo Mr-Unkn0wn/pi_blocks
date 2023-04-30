@@ -8,12 +8,13 @@ pub fn draw_ui(index: &mut usize, simulation_time: &mut f64, left: &mut Square, 
 
         egui::Window::new("Settings")
             .anchor(Align2::RIGHT_TOP, egui::emath::vec2(-10.0, 10.0))
+            .resizable(false)
+            .collapsible(false)
             .show(ctx, |ui| {
                 
-                ui.horizontal(|ui| {
-                    manipulate_square(ui, left, "Left square", active);
-                    manipulate_square(ui, right, "Right square", active);
-                });
+                manipulate_square(ui, left, "Left square", active);
+                manipulate_square(ui, right, "Right square", active);
+
                 ui.separator();
 
                 time_slider(ui, tick_time);
@@ -85,9 +86,7 @@ fn simulation_toggle(ui: &mut Ui, active: &mut bool, left: &mut Square, right: &
         if ui.add(egui::Button::new("Run simulation")).clicked() {
             change_sim_state(active, left, right, left_sim, right_sim, wall_x, coll_list, index, simulation_time);
         }
-        if ui.checkbox(active, "").clicked() {
-            change_sim_state(active, left, right, left_sim, right_sim, wall_x, coll_list, index, simulation_time);
-        };
+        ui.add_enabled(false, egui::Checkbox::new(active, ""));
     });
 }
 
@@ -96,7 +95,6 @@ fn change_sim_state(active: &mut bool, left: &mut Square, right: &mut Square, le
         *left_sim = (*left).clone();
         *right_sim = (*right).clone();
         *coll_list = simulate::simulate_everything(&mut left_sim.clone(), &mut right_sim.clone(), *wall_x);
-        println!("{:#?}",coll_list);
 
         *index = 0;
         *simulation_time = 0.0;

@@ -13,8 +13,8 @@ fn window_conf() -> Conf {
         window_title: "Pi Blocks".to_string(),
         fullscreen: false,
         window_resizable: false,
-        window_width: 1280,
-        window_height: 720,
+        window_width: 1300,
+        window_height: 750,
         ..Default::default()
     }
 }
@@ -35,17 +35,17 @@ async fn main() {
 
     let mut box_right = Square{
         mass: 1.0,
-        pos: Vec2::new(wall_x + 2000.0, wall_y - 301.0),
-        width: 300.0,
-        height: 300.0,
+        pos: Vec2::new(wall_x + grid * 6.0, wall_y - grid * 2.0 - 1.0),
+        width: grid * 2.0,
+        height: grid * 2.0,
         vel: -300.0,
     };
 
     let mut box_left = Square{
         mass: 1.0,
-        pos: Vec2::new(wall_x + 300.0, wall_y - 101.0),
-        width: 100.0,
-        height: 100.0,
+        pos: Vec2::new(wall_x + grid * 3.0, wall_y - grid - 1.0),
+        width: grid,
+        height: grid,
         vel: 0.0,
     };
 

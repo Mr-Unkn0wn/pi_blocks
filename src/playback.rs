@@ -1,9 +1,10 @@
-use crate::{square::Square, simulate::{WallCollision, Collision, SquaresCollision}};
+use crate::{square::Square, simulate::{WallCollision, Collision, SquaresCollision}, sound_player::SoundPlayer};
 
 
-pub fn update_squares(time_per_tick : &f64, left: &mut Square, right: &mut Square, wall_x: &f32, coll_list: &Vec<Collision>, simulation_time: &mut f64, index: &mut usize){
+pub fn update_squares(sound: &SoundPlayer, time_per_tick : &f64, left: &mut Square, right: &mut Square, wall_x: &f32, coll_list: &Vec<Collision>, simulation_time: &mut f64, index: &mut usize){
 
     *simulation_time += time_per_tick;
+    let old_index = *index;
 
     let mut list_time: f32;
     loop { // move through list until we reach last collision in current tick
@@ -72,6 +73,6 @@ pub fn update_squares(time_per_tick : &f64, left: &mut Square, right: &mut Squar
             left.pos.x += left.vel * time_left_in_tick as f32;
         },
     }
-
+    sound.play(&((*index - old_index) as i32));
 
 }

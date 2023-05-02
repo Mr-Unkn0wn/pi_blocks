@@ -2,7 +2,7 @@ use egui::*;
 
 use crate::{square::Square, simulate};
 
-pub fn draw_ui(index: &mut usize, simulation_time: &mut f64, left: &mut Square, right: &mut Square, left_sim: &mut Square, right_sim: &mut Square, grid: &f32, tick_time: &mut f64, active: &mut bool, wall_x : &f32, coll_list: &mut Vec<simulate::Collision>){
+pub fn draw_ui(index: &mut usize, simulation_time: &mut f64, left: &mut Square, right: &mut Square, left_sim: &mut Square, right_sim: &mut Square, tick_time: &mut f64, active: &mut bool, wall_x : &f32, coll_list: &mut Vec<simulate::Collision>){
 
     egui_macroquad::ui(|ctx| {
 

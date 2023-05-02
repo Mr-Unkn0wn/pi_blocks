@@ -7,5 +7,6 @@ edition = "2021"
 
 [dependencies]
 egui = "0.21.0"
-egui-macroquad = "0.15.0"
-macroquad = "0.3.25"
+egui-macroquad = { version = "0.15.0", default_features = false }
+macroquad = { version = "0.3.25", default_features = false }
+rodio = "0.17.1"

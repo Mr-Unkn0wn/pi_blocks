@@ -1,5 +1,5 @@
+use click_player::ClickPlayer;
 use macroquad::prelude::*;
-use sound_player::SoundPlayer;
 use crate::square::{Square};
 
 mod square;
@@ -7,7 +7,7 @@ mod draw_game;
 mod simulate;
 mod playback;
 mod draw_ui;
-mod sound_player;
+mod click_player;
 
 fn window_conf() -> Conf {
     Conf {
@@ -66,13 +66,7 @@ async fn main() {
         vel: 0.0,
     };
 
-    let sound = macroquad::audio::load_sound("/home/mrunkn0wn/Documents/Rust/pi_blocks/mixkit-quick-golf-hit-2121.wav").await.unwrap();
-
-
-    let sound_player = SoundPlayer{
-        sound: sound,
-        volume: 0.5,
-    };
+    let click_player = ClickPlayer::new();
 
 
     let mut coll_list: Vec<simulate::Collision> = vec![];
@@ -83,6 +77,7 @@ async fn main() {
         if is_key_pressed(KeyCode::Q) || is_key_pressed(KeyCode::Escape) {
             break;
         }
+        click_player.play_once();
 
         clear_background(Color::new(0.00, 0.37, 0.9, 1.00));
         draw_game::draw_grid(SKYBLUE, grid, 3, 3.0, 1.0, 0.3);
@@ -91,7 +86,7 @@ async fn main() {
         if active {
             box_right_sim.draw(&font);
             box_left_sim.draw(&font);
-            playback::update_squares(&sound_player, &time_per_tick, &mut box_left_sim, &mut box_right_sim, &wall_x, &coll_list, &mut simulation_time, &mut index);
+            playback::update_squares(&time_per_tick, &mut box_left_sim, &mut box_right_sim, &wall_x, &coll_list, &mut simulation_time, &mut index);
         } else {
             box_right.draw(&font);
             box_left.draw(&font);
@@ -100,7 +95,7 @@ async fn main() {
         draw_game::draw_collision_counter(&index, &font, &grid);
 
         draw_game::draw_vingette(vingette);
-        draw_ui::draw_ui(&mut index, &mut simulation_time,&mut box_left, &mut box_right, &mut box_left_sim, &mut box_right_sim, &grid, &mut time_per_tick, &mut active, &wall_x, &mut coll_list);
+        draw_ui::draw_ui(&mut index, &mut simulation_time,&mut box_left, &mut box_right, &mut box_left_sim, &mut box_right_sim,  &mut time_per_tick, &mut active, &wall_x, &mut coll_list);
         next_frame().await
     }
 }

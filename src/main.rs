@@ -77,7 +77,6 @@ async fn main() {
         if is_key_pressed(KeyCode::Q) || is_key_pressed(KeyCode::Escape) {
             break;
         }
-        click_player.play_once();
 
         clear_background(Color::new(0.00, 0.37, 0.9, 1.00));
         draw_game::draw_grid(SKYBLUE, grid, 3, 3.0, 1.0, 0.3);
@@ -86,7 +85,7 @@ async fn main() {
         if active {
             box_right_sim.draw(&font);
             box_left_sim.draw(&font);
-            playback::update_squares(&time_per_tick, &mut box_left_sim, &mut box_right_sim, &wall_x, &coll_list, &mut simulation_time, &mut index);
+            playback::update_squares(&click_player, &time_per_tick, &mut box_left_sim, &mut box_right_sim, &wall_x, &coll_list, &mut simulation_time, &mut index);
         } else {
             box_right.draw(&font);
             box_left.draw(&font);

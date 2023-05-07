@@ -1,13 +1,15 @@
+#![windows_subsystem = "windows"]
+
+use crate::square::Square;
 use click_player::ClickPlayer;
 use macroquad::prelude::*;
-use crate::square::{Square};
 
-mod square;
-mod draw_game;
-mod simulate;
-mod playback;
-mod draw_ui;
 mod click_player;
+mod draw_game;
+mod draw_ui;
+mod playback;
+mod simulate;
+mod square;
 
 fn window_conf() -> Conf {
     Conf {
@@ -33,8 +35,7 @@ async fn main() {
     let mut time_per_tick: f64 = 1.0 / 50.0;
     let mut active: bool = false;
 
-
-    let mut box_right = Square{
+    let mut box_right = Square {
         mass: 1.0,
         pos: Vec2::new(wall_x + grid * 6.0, wall_y - grid * 2.0 - 1.0),
         width: grid * 2.0,
@@ -42,7 +43,7 @@ async fn main() {
         vel: -300.0,
     };
 
-    let mut box_left = Square{
+    let mut box_left = Square {
         mass: 1.0,
         pos: Vec2::new(wall_x + grid * 3.0, wall_y - grid - 1.0),
         width: grid,
@@ -50,7 +51,7 @@ async fn main() {
         vel: 0.0,
     };
 
-    let mut box_right_sim = Square{
+    let mut box_right_sim = Square {
         mass: 0.0,
         pos: Vec2::new(0.0, 0.0),
         width: 10.0,
@@ -58,7 +59,7 @@ async fn main() {
         vel: 0.0,
     };
 
-    let mut box_left_sim = Square{
+    let mut box_left_sim = Square {
         mass: 0.0,
         pos: Vec2::new(0.0, 0.0),
         width: 10.0,
@@ -67,7 +68,6 @@ async fn main() {
     };
 
     let click_player = ClickPlayer::new();
-
 
     let mut coll_list: Vec<simulate::Collision> = vec![];
     let mut index: usize = 0;
@@ -85,7 +85,16 @@ async fn main() {
         if active {
             box_right_sim.draw(&font);
             box_left_sim.draw(&font);
-            playback::update_squares(&click_player, &time_per_tick, &mut box_left_sim, &mut box_right_sim, &wall_x, &coll_list, &mut simulation_time, &mut index);
+            playback::update_squares(
+                &click_player,
+                &time_per_tick,
+                &mut box_left_sim,
+                &mut box_right_sim,
+                &wall_x,
+                &coll_list,
+                &mut simulation_time,
+                &mut index,
+            );
         } else {
             box_right.draw(&font);
             box_left.draw(&font);
@@ -94,7 +103,18 @@ async fn main() {
         draw_game::draw_collision_counter(&index, &font, &grid);
 
         draw_game::draw_vingette(vingette);
-        draw_ui::draw_ui(&mut index, &mut simulation_time,&mut box_left, &mut box_right, &mut box_left_sim, &mut box_right_sim,  &mut time_per_tick, &mut active, &wall_x, &mut coll_list);
+        draw_ui::draw_ui(
+            &mut index,
+            &mut simulation_time,
+            &mut box_left,
+            &mut box_right,
+            &mut box_left_sim,
+            &mut box_right_sim,
+            &mut time_per_tick,
+            &mut active,
+            &wall_x,
+            &mut coll_list,
+        );
         next_frame().await
     }
 }
